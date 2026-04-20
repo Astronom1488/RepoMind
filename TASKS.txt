@@ -1,0 +1,303 @@
+# RepoMind — RAG assistant for developer tasks
+
+## Goal
+
+Build a portfolio-ready AI project for an AI-assisted developer internship.
+
+The project should help a developer understand an unfamiliar codebase, find relevant files, explain logic, and suggest changes for bugfixes or small features.
+
+## Core idea
+
+RepoMind ingests a repository, indexes code and documentation, and answers questions in two modes:
+
+1. **Ask mode** — general questions about the codebase.
+2. **Fix mode** — issue-oriented analysis with suggested files, steps, risks, and tests.
+
+## Why this project is strong
+
+* Shows RAG fundamentals.
+* Shows practical developer workflow use case.
+* Demonstrates backend/API skills.
+* Demonstrates product thinking, not just experimentation.
+* Fits AI-assisted developer positioning better than a generic PDF chatbot.
+
+## MVP features
+
+### 1. Repository ingestion
+
+* Load files from a local repository path.
+* Support extensions:
+
+  * `.py`
+  * `.js`
+  * `.ts`
+  * `.md`
+  * `.txt`
+  * `.json`
+* Ignore:
+
+  * `.git`
+  * `node_modules`
+  * `venv`
+  * `__pycache__`
+  * build/dist folders
+
+### 2. Chunking
+
+* Markdown/text docs: chunk by paragraphs/sections.
+* Code files: chunk by function/class when possible, otherwise sliding window.
+* Store metadata:
+
+  * file path
+  * file type
+  * language
+  * chunk id
+
+### 3. Embeddings and vector store
+
+* Use `sentence-transformers/all-MiniLM-L6-v2` for embeddings.
+* Use ChromaDB as vector store.
+
+### 4. Retrieval
+
+* Top-k semantic search.
+* Return retrieved chunks with metadata.
+* Basic deduplication by file path/chunk overlap.
+
+### 5. LLM answer generation
+
+Generate structured answers using retrieved context.
+
+#### Ask mode output
+
+* Short answer
+* Relevant files
+* Explanation
+* Related code snippets
+
+#### Fix mode output
+
+* Problem summary
+* Most relevant files
+* Likely root cause
+* Suggested change plan
+* Risks
+* Test checklist
+
+### 6. API
+
+FastAPI endpoints:
+
+* `POST /index` — index a repository
+* `POST /ask` — query Ask mode
+* `POST /fix` — query Fix mode
+* `GET /health`
+
+### 7. UI
+
+Streamlit interface with:
+
+* input for repository path
+* button to index repository
+* question box
+* mode switch: Ask / Fix
+* result view
+* retrieved files panel
+
+## Nice-to-have features after MVP
+
+* Reranking
+* Syntax-aware chunking using tree-sitter
+* File type filters
+* Support for pasted stack trace
+* Support for GitHub repo URL cloning
+* Query history
+* Example demo repository selector
+
+## Tech stack
+
+* Python
+* FastAPI
+* Streamlit
+* ChromaDB
+* sentence-transformers
+* OpenAI API or Ollama for answer generation
+* Pydantic
+* pytest
+
+## Suggested project structure
+
+```text
+repomind/
+├── app/
+│   ├── api/
+│   │   ├── routes_index.py
+│   │   ├── routes_query.py
+│   │   └── schemas.py
+│   ├── core/
+│   │   ├── config.py
+│   │   └── logging.py
+│   ├── ingestion/
+│   │   ├── loader.py
+│   │   ├── parser.py
+│   │   └── chunker.py
+│   ├── retrieval/
+│   │   ├── embeddings.py
+│   │   ├── vector_store.py
+│   │   └── retriever.py
+│   ├── llm/
+│   │   ├── prompts.py
+│   │   └── generator.py
+│   ├── services/
+│   │   ├── indexing_service.py
+│   │   └── query_service.py
+│   └── main.py
+├── ui/
+│   └── streamlit_app.py
+├── tests/
+│   ├── test_chunker.py
+│   ├── test_loader.py
+│   └── test_retrieval.py
+├── data/
+│   └── demo_repo/
+├── chroma_db/
+├── .env.example
+├── .gitignore
+├── requirements.txt
+└── README.md
+```
+
+## Output format design
+
+### Ask mode template
+
+```text
+Answer:
+...
+
+Relevant files:
+- path/to/file.py
+- path/to/other.md
+
+Why these files matter:
+...
+```
+
+### Fix mode template
+
+```text
+Problem summary:
+...
+
+Relevant files:
+- app/auth.py
+- app/api/routes.py
+
+Likely root cause:
+...
+
+Suggested changes:
+1. ...
+2. ...
+3. ...
+
+Risks:
+- ...
+
+Tests to run:
+- ...
+```
+
+## MVP development order
+
+### Day 1
+
+* Create project structure.
+* Implement repository loader.
+* Implement ignore rules.
+* Read files and store metadata.
+
+### Day 2
+
+* Implement chunking for text and code.
+* Add embedding generation.
+* Save chunks to ChromaDB.
+
+### Day 3
+
+* Implement retrieval.
+* Build FastAPI endpoints.
+* Test with a demo repo.
+
+### Day 4
+
+* Add LLM generation.
+* Create Ask and Fix prompts.
+* Return structured responses.
+
+### Day 5
+
+* Build Streamlit UI.
+* Show retrieved files and final answer.
+* Improve usability.
+
+### Day 6
+
+* Add tests.
+* Clean error handling.
+* Prepare `.env.example` and README.
+
+### Day 7
+
+* Polish GitHub repo.
+* Add screenshots/GIF.
+* Deploy if possible.
+
+## README sections
+
+* Project overview
+* Why it exists
+* Architecture
+* Features
+* Tech stack
+* Setup instructions
+* Example queries
+* Screenshots
+* Future improvements
+
+## Example queries
+
+### Ask mode
+
+* Where is authentication handled?
+* Which files are responsible for input validation?
+* How does the API create a new user?
+
+### Fix mode
+
+* Endpoint `/login` returns 500 when email is missing. What files should I inspect?
+* I need to add JWT expiration validation. Where should I start?
+* A POST endpoint accepts invalid payloads. What should be changed?
+
+## Interview value
+
+This project lets you talk about:
+
+* RAG pipeline design
+* code/document chunking tradeoffs
+* metadata-based retrieval
+* developer-assistant UX
+* practical AI workflow integration
+* limitations of retrieval quality and hallucination control
+
+## What to avoid
+
+* Generic chat-with-PDF positioning
+* Notebook-only implementation
+* No UI
+* No README examples
+* Overcomplicated multi-agent architecture for MVP
+
+## Next concrete step
+
+Start with repository loading + ignore rules + chunking. That is the real foundation.
