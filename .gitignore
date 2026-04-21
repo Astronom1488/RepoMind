@@ -1,7 +1,22 @@
-venv/
+# Python
 __pycache__/
 *.pyc
-.env
-chroma_db/
-.idea/
+*.pyo
+*.pyd
+
+# Virtual env
+.venv/
+venv/
+
+# OS
+.DS_Store
+
+# IDE
 .vscode/
+.idea/
+
+# Chroma DB
+chroma_db/
+
+# Logs
+*.log

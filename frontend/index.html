@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RepoMind</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #121933;
+      --panel-2: #1a2345;
+      --border: #2a3668;
+      --text: #e8ecff;
+      --muted: #a8b3da;
+      --accent: #7c9cff;
+      --accent-2: #5eead4;
+      --danger: #ff7a7a;
+      --success: #79e2a0;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, #18244d 0%, transparent 30%),
+        radial-gradient(circle at top right, #17385c 0%, transparent 25%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1150px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    .hero {
+      margin-bottom: 24px;
+    }
+
+    .title {
+      font-size: 38px;
+      font-weight: 800;
+      margin: 0 0 10px;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.5;
+      max-width: 860px;
+    }
+
+    .chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .chip {
+      font-size: 12px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .card h2 {
+      margin: 0 0 14px;
+      font-size: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    input, textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 14px 14px;
+      font-size: 14px;
+      outline: none;
+      transition: 0.2s ease;
+    }
+
+    input:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(124, 156, 255, 0.15);
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.08s ease, opacity 0.2s ease, background 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .primary {
+      background: var(--accent);
+      color: #081022;
+    }
+
+    .secondary {
+      background: var(--panel-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .status {
+      margin-top: 12px;
+      min-height: 22px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .status.success {
+      color: var(--success);
+    }
+
+    .status.error {
+      color: var(--danger);
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: 18px;
+    }
+
+    .output-box {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      line-height: 1.6;
+      color: var(--text);
+      white-space: pre-wrap;
+      min-height: 120px;
+    }
+
+    .files-box {
+      max-height: 360px;
+      overflow: auto;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .sources-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .source-item {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .source-path {
+      font-size: 13px;
+      color: var(--accent-2);
+      word-break: break-all;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .source-lines {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .source-preview {
+      font-family: Consolas, Monaco, monospace;
+      font-size: 12px;
+      line-height: 1.55;
+      background: rgba(255,255,255,0.02);
+      border-radius: 10px;
+      padding: 10px;
+      white-space: pre-wrap;
+      overflow: hidden;
+    }
+
+    .file-item {
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      font-family: Consolas, Monaco, monospace;
+      font-size: 13px;
+      color: var(--text);
+      word-break: break-word;
+    }
+
+    .file-item:last-child {
+      border-bottom: none;
+    }
+
+    details {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--panel);
+      padding: 12px 14px;
+    }
+
+    summary {
+      cursor: pointer;
+      color: var(--muted);
+      font-weight: 700;
+      outline: none;
+    }
+
+    .raw-context {
+      margin-top: 12px;
+      font-family: Consolas, Monaco, monospace;
+      font-size: 12px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      color: var(--text);
+    }
+
+    @media (max-width: 900px) {
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+
+      .title {
+        font-size: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1 class="title">RepoMind</h1>
+      <p class="subtitle">
+        Local RAG assistant for understanding a repository. Index your project, ask codebase questions,
+        inspect retrieved sources, and browse repository files.
+      </p>
+      <div class="chips">
+        <div class="chip">FastAPI</div>
+        <div class="chip">Sentence Transformers</div>
+        <div class="chip">ChromaDB</div>
+        <div class="chip">Local LLM via Ollama</div>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <h2>1. Repository</h2>
+        <label for="repoPath">Repository Path</label>
+        <input
+          type="text"
+          id="repoPath"
+          placeholder="C:/Users/you/projects/repomind"
+        />
+        <div class="actions">
+          <button class="primary" id="indexBtn" onclick="indexRepository()">Index Repository</button>
+          <button class="secondary" id="filesBtn" onclick="showFiles()">Show Files</button>
+        </div>
+        <div class="status" id="indexStatus"></div>
+        <div class="status" id="filesStatus"></div>
+      </section>
+
+      <section class="card">
+        <h2>2. Ask Question</h2>
+        <label for="question">Question</label>
+        <textarea
+          id="question"
+          placeholder="What is the difference between chunk_text and chunk_documents?"
+        ></textarea>
+        <div class="actions">
+          <button class="primary" id="askBtn" onclick="askQuestion()">Ask RepoMind</button>
+          <button class="secondary" onclick="fillExampleQuestion()">Use Example</button>
+          <button class="secondary" onclick="clearResults()">Clear Results</button>
+        </div>
+        <div class="status" id="askStatus"></div>
+      </section>
+
+      <div class="two-col">
+        <section class="card">
+          <h2>Answer</h2>
+          <div class="output-box" id="answerOutput">
+            <span class="muted">No answer yet.</span>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Sources</h2>
+          <div class="sources-list" id="sourcesOutput">
+            <div class="muted">No sources yet.</div>
+          </div>
+        </section>
+      </div>
+
+      <div class="two-col">
+        <section class="card">
+          <h2>Repository Files</h2>
+          <div class="output-box files-box" id="filesOutput">
+            <span class="muted">No files loaded yet.</span>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Debug Context</h2>
+          <details open>
+            <summary>Show raw retrieved context</summary>
+            <div class="raw-context" id="contextOutput">No context yet.</div>
+          </details>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = "http://127.0.0.1:8000";
+
+    function setStatus(elementId, message, type = "") {
+      const el = document.getElementById(elementId);
+      el.textContent = message;
+      el.className = `status ${type}`.trim();
+    }
+
+    function setButtonLoading(buttonId, isLoading, loadingText, normalText) {
+      const btn = document.getElementById(buttonId);
+      btn.disabled = isLoading;
+      btn.textContent = isLoading ? loadingText : normalText;
+    }
+
+    function fillExampleQuestion() {
+      document.getElementById("question").value =
+        "What is the difference between chunk_text and chunk_documents?";
+    }
+
+    function clearResults() {
+      document.getElementById("answerOutput").innerHTML = '<span class="muted">No answer yet.</span>';
+      document.getElementById("sourcesOutput").innerHTML = '<div class="muted">No sources yet.</div>';
+      document.getElementById("contextOutput").textContent = "No context yet.";
+      setStatus("askStatus", "");
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+    }
+
+    function renderSources(sources) {
+      const sourcesOutput = document.getElementById("sourcesOutput");
+
+      if (!sources || !sources.length) {
+        sourcesOutput.innerHTML = '<div class="muted">No sources found.</div>';
+        return;
+      }
+
+      sourcesOutput.innerHTML = sources.map(source => `
+        <div class="source-item">
+          <div class="source-path">${escapeHtml(source.path || "Unknown path")}</div>
+          <div class="source-lines">
+            Lines: ${escapeHtml(source.line_start ?? "?")} - ${escapeHtml(source.line_end ?? "?")}
+          </div>
+          <div class="source-preview">${escapeHtml((source.preview || "").slice(0, 500))}${source.preview && source.preview.length > 500 ? "..." : ""}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderFiles(files) {
+      const filesOutput = document.getElementById("filesOutput");
+
+      if (!files || !files.length) {
+        filesOutput.innerHTML = '<span class="muted">No files found.</span>';
+        return;
+      }
+
+      filesOutput.innerHTML = files.map(file => `
+        <div class="file-item">${escapeHtml(file)}</div>
+      `).join("");
+    }
+
+    async function indexRepository() {
+      const repoPath = document.getElementById("repoPath").value.trim();
+
+      if (!repoPath) {
+        setStatus("indexStatus", "Please enter a repository path.", "error");
+        return;
+      }
+
+      setButtonLoading("indexBtn", true, "Indexing...", "Index Repository");
+      setStatus("indexStatus", "Indexing repository. This may take some time on the first run.");
+      setStatus("filesStatus", "");
+
+      try {
+        const response = await fetch(`${API_BASE}/index`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            repo_path: repoPath
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          setStatus("indexStatus", `Error: ${data.detail || "Failed to index repository"}`, "error");
+          return;
+        }
+
+        setStatus(
+          "indexStatus",
+          `Success. Indexed ${data.documents_indexed} documents and ${data.chunks_indexed} chunks.`,
+          "success"
+        );
+      } catch (error) {
+        setStatus("indexStatus", `Request failed: ${error.message}`, "error");
+      } finally {
+        setButtonLoading("indexBtn", false, "Indexing...", "Index Repository");
+      }
+    }
+
+    async function showFiles() {
+      const repoPath = document.getElementById("repoPath").value.trim();
+
+      if (!repoPath) {
+        setStatus("filesStatus", "Please enter a repository path.", "error");
+        return;
+      }
+
+      setButtonLoading("filesBtn", true, "Loading Files...", "Show Files");
+      setStatus("filesStatus", "Loading repository files...");
+      document.getElementById("filesOutput").innerHTML = '<span class="muted">Loading files...</span>';
+
+      try {
+        const response = await fetch(`${API_BASE}/files`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            repo_path: repoPath
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          setStatus("filesStatus", `Error: ${data.detail || "Failed to load files"}`, "error");
+          document.getElementById("filesOutput").innerHTML = '<span class="muted">No files found.</span>';
+          return;
+        }
+
+        setStatus("filesStatus", `Loaded ${data.count} files.`, "success");
+        renderFiles(data.files || []);
+      } catch (error) {
+        setStatus("filesStatus", `Request failed: ${error.message}`, "error");
+        document.getElementById("filesOutput").innerHTML = '<span class="muted">No files found.</span>';
+      } finally {
+        setButtonLoading("filesBtn", false, "Loading Files...", "Show Files");
+      }
+    }
+
+    async function askQuestion() {
+      const question = document.getElementById("question").value.trim();
+
+      if (!question) {
+        setStatus("askStatus", "Please enter a question.", "error");
+        return;
+      }
+
+      setButtonLoading("askBtn", true, "Thinking...", "Ask RepoMind");
+      setStatus("askStatus", "Retrieving context and generating answer...");
+
+      document.getElementById("answerOutput").innerHTML = '<span class="muted">Generating answer...</span>';
+      document.getElementById("sourcesOutput").innerHTML = '<div class="muted">Loading sources...</div>';
+      document.getElementById("contextOutput").textContent = "Loading raw context...";
+
+      try {
+        const response = await fetch(`${API_BASE}/ask`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            question: question
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          setStatus("askStatus", `Error: ${data.detail || "Failed to get answer"}`, "error");
+          document.getElementById("answerOutput").innerHTML = '<span class="muted">No answer.</span>';
+          document.getElementById("sourcesOutput").innerHTML = '<div class="muted">No sources.</div>';
+          document.getElementById("contextOutput").textContent = "No context.";
+          return;
+        }
+
+        setStatus("askStatus", "Done.", "success");
+        document.getElementById("answerOutput").textContent = data.answer || "No answer returned.";
+        document.getElementById("contextOutput").textContent = data.context || "No context returned.";
+        renderSources(data.sources || []);
+      } catch (error) {
+        setStatus("askStatus", `Request failed: ${error.message}`, "error");
+        document.getElementById("answerOutput").innerHTML = '<span class="muted">No answer.</span>';
+        document.getElementById("sourcesOutput").innerHTML = '<div class="muted">No sources.</div>';
+        document.getElementById("contextOutput").textContent = "No context.";
+      } finally {
+        setButtonLoading("askBtn", false, "Thinking...", "Ask RepoMind");
+      }
+    }
+  </script>
+</body>
+</html>
